@@ -25,16 +25,27 @@ export async function generateStaticParams() {
   }
 }
 
-export default function ImagePage({ params }: { params: { name: string } }) {
-  const fileName = params.name
-  
-  // Check if the image file exists
-  const imagePath = path.join(process.cwd(), 'public/uploads', fileName)
-  if (!fs.existsSync(imagePath)) {
-    return notFound()
+// Define page metadata
+export const metadata = {
+  title: 'View Image | NextJS Image Hosting',
+  description: 'View and share your uploaded image',
+}
+
+interface ImagePageProps {
+  params: {
+    name: string
   }
+}
+
+export default function ImagePage({ params }: ImagePageProps) {
+  const { name } = params
   
-  // Use the relative path for the image
-  const imageUrl = `/uploads/${fileName}`
-  return <ImageView imagePath={imageUrl} fileName={fileName} />
+  // Construct the image path
+  const imagePath = `/uploads/${name}`
+  
+  return (
+    <main className="min-h-screen bg-gray-100 p-4">
+      <ImageView imagePath={imagePath} fileName={name} />
+    </main>
+  )
 }

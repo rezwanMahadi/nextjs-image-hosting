@@ -23,14 +23,23 @@ export default function ImageView({ imagePath, fileName }: ImageViewProps) {
     const windowOrigin = window.location.origin
     setOrigin(windowOrigin)
     
-    // The imagePath might be relative, so make it absolute
-    const directUrl = imagePath.startsWith('http') ? imagePath : `${windowOrigin}${imagePath}`
+    // Ensure the path always starts with /uploads/ for consistency
+    let normalizedPath = imagePath
+    if (!normalizedPath.startsWith('/uploads/') && !normalizedPath.startsWith('http')) {
+      normalizedPath = `/uploads/${fileName}`
+    }
+    
+    // Build the direct URL with the correct path
+    const directUrl = normalizedPath.startsWith('http') 
+      ? normalizedPath 
+      : `${windowOrigin}${normalizedPath}`
+    
     setEmbedUrls({
       directUrl,
       htmlEmbed: `<img src="${directUrl}" alt="Hosted image" />`,
       markdownEmbed: `![Hosted image](${directUrl})`
     })
-  }, [imagePath])
+  }, [imagePath, fileName])
 
   const copyToClipboard = (text: string, type: string) => {
     if (typeof navigator === 'undefined') return
@@ -49,8 +58,9 @@ export default function ImageView({ imagePath, fileName }: ImageViewProps) {
           <h2 className="font-semibold">Image Preview</h2>
         </div>
         <div className="p-4 flex justify-center">
+          {/* Use the /uploads/ path directly for image src */}
           <img 
-            src={imagePath} 
+            src={`/uploads/${fileName}`} 
             alt={fileName} 
             className="max-w-full max-h-[600px] object-contain" 
           />
