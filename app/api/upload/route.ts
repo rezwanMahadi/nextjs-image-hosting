@@ -1,11 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { put } from '@vercel/blob';
-import { randomUUID } from 'crypto';
+import fs from 'fs';
 import path from 'path';
+import { randomUUID } from 'crypto';
+import { writeFile } from 'fs/promises';
 
 // Use the new route segment configuration format
 export const dynamic = 'force-dynamic'; // Make this route dynamic
 export const runtime = 'nodejs'; // Use Node.js runtime
+
+// Ensure upload directory exists
+const uploadDir = path.join(process.cwd(), 'public/uploads');
+fs.mkdirSync(uploadDir, { recursive: true });
 
 export async function POST(req: NextRequest) {
   // Add CORS headers for cross-origin requests
@@ -46,26 +51,37 @@ export async function POST(req: NextRequest) {
     // Create unique filename with original extension
     const uniqueId = randomUUID();
     const fileName = `${uniqueId}${fileExt}`;
+    const filePath = path.join(uploadDir, fileName);
     
-    // Instead of saving to filesystem, save to Vercel Blob Storage
-    const blob = await put(fileName, file, {
-      access: 'public',
-    });
-
-    // The blob.url contains the full URL to the uploaded file
-    const fileUrl = blob.url;
-    const displayUrl = `/image/${fileName}`;
+    // Get host information for URL construction
     const host = req.headers.get('host') || '';
+    const protocol = host.includes('localhost') ? 'http://' : 'https://';
+    const baseUrl = `${protocol}${host}`;
+    
+    // Convert file to buffer and save to disk
+    const buffer = Buffer.from(await file.arrayBuffer());
+    await writeFile(filePath, buffer);
+
+    // Construct URLs
+    const fileUrl = `/uploads/${fileName}`;
+    const displayUrl = `/image/${fileName}`;
     
     return NextResponse.json({ 
       success: true, 
-      url: fileUrl,  // This is now the full URL from Vercel Blob
+      url: fileUrl,
       displayUrl: displayUrl,
       fileName: fileName
     }, { headers });
   } catch (error) {
     console.error('Upload error:', error);
-    return NextResponse.json({ error: 'Upload failed' }, { 
+    
+    // Provide detailed error response
+    let errorMessage = 'Upload failed';
+    if (error instanceof Error) {
+      errorMessage = error.message;
+    }
+    
+    return NextResponse.json({ error: errorMessage }, { 
       status: 500,
       headers
     });

@@ -4,22 +4,27 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 
 interface ImageViewProps {
-  imagePath: string  // This will be the full URL from blob storage
+  imagePath: string  // Path to the image 
   fileName: string
 }
 
 export default function ImageView({ imagePath, fileName }: ImageViewProps) {
   const [copied, setCopied] = useState<string | null>(null)
+  const [origin, setOrigin] = useState('')
   const [embedUrls, setEmbedUrls] = useState({
     directUrl: '',
     htmlEmbed: '',
     markdownEmbed: ''
   })
 
-  // Set URLs after component mounts - imagePath is already a complete URL
+  // Set URLs after component mounts
   useEffect(() => {
-    // The imagePath is now a full URL from blob storage
-    const directUrl = imagePath
+    // Get origin for absolute URLs
+    const windowOrigin = window.location.origin
+    setOrigin(windowOrigin)
+    
+    // The imagePath might be relative, so make it absolute
+    const directUrl = imagePath.startsWith('http') ? imagePath : `${windowOrigin}${imagePath}`
     setEmbedUrls({
       directUrl,
       htmlEmbed: `<img src="${directUrl}" alt="Hosted image" />`,

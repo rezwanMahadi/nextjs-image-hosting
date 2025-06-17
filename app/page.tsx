@@ -1,15 +1,33 @@
-import { list } from '@vercel/blob';
+import fs from 'fs';
+import path from 'path';
 import Link from 'next/link';
 
-export default async function HomePage() {
-  // Get images from Vercel Blob Storage instead of the filesystem
-  let imageFiles: { url: string; pathname: string }[] = [];
+interface ImageFile {
+  url: string;
+  pathname: string;
+}
+
+export default function HomePage() {
+  // Get images from filesystem
+  let imageFiles: ImageFile[] = [];
   
   try {
-    const { blobs } = await list();
-    imageFiles = blobs;
+    // Get images from the uploads directory
+    const uploadDir = path.join(process.cwd(), 'public/uploads');
+    
+    // Create directory if it doesn't exist
+    if (!fs.existsSync(uploadDir)) {
+      fs.mkdirSync(uploadDir, { recursive: true });
+    } else {
+      // Read the directory for image files
+      const files = fs.readdirSync(uploadDir);
+      imageFiles = files.map(file => ({
+        url: `/uploads/${file}`,
+        pathname: file
+      }));
+    }
   } catch (error) {
-    console.error('Error fetching blobs:', error);
+    console.error('Error fetching images:', error);
   }
 
   return (

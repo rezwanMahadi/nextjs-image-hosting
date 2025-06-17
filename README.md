@@ -16,9 +16,8 @@ A simple image hosting service built with Next.js that allows users to upload im
 
 - Node.js 18.17.0 or newer
 - npm or yarn
-- Vercel account (for Blob Storage)
 
-### Local Development
+### Installation
 
 1. Clone the repository
 ```bash
@@ -33,43 +32,25 @@ npm install
 yarn install
 ```
 
-3. Set up Vercel Blob Storage:
-
-   a. Install Vercel CLI if you don't have it:
-   ```bash
-   npm i -g vercel
-   ```
-
-   b. Link your project to Vercel:
-   ```bash
-   vercel link
-   ```
-
-   c. Pull environment variables:
-   ```bash
-   vercel env pull .env.local
-   ```
-   
-   If you're setting up a new project, add a `BLOB_READ_WRITE_TOKEN` to your Vercel environment variables in the Vercel dashboard.
-
-4. Run the development server
+3. Run the development server
 ```bash
 npm run dev
 # or
 yarn dev
 ```
 
-5. Open [http://localhost:3000](http://localhost:3000) in your browser
+4. Open [http://localhost:3000](http://localhost:3000) in your browser
 
 ## Production Deployment
 
-To deploy to Vercel:
+To run the application in production:
 
 ```bash
-vercel
+npm run build
+npm run start
 ```
 
-Or set up automatic deployments from your GitHub repository.
+You can deploy this application to any hosting provider that supports Next.js applications.
 
 ## API Usage
 
@@ -94,18 +75,9 @@ fetch('https://your-deployment-url.com/api/upload', {
 });
 ```
 
-## Environment Variables
+## File Storage
 
-Required for production:
-
-```
-BLOB_READ_WRITE_TOKEN=<your-vercel-blob-token>
-```
-
-Optional:
-```
-BLOB_STORE_ID=<your-store-id>  # Only if using a custom store
-```
+Images are stored in the `/public/uploads` directory. Make sure this directory has appropriate write permissions on your server.
 
 ## License
 

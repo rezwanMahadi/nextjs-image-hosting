@@ -2,4 +2,3 @@ node_modules
 public/uploads/*
 .env
 .next
-BLOB_READ_WRITE_TOKEN

@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  // This ensures images work correctly
+  // Ensure images work correctly
   images: {
     unoptimized: true,
   },

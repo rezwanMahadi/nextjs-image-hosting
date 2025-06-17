@@ -9,7 +9,6 @@
         "lint": "next lint"
     },
     "dependencies": {
-        "@vercel/blob": "^1.1.1",
         "crypto": "^1.0.1",
         "fs": "^0.0.1-security",
         "next": "^14.0.0",
